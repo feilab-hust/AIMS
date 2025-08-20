@@ -1,0 +1,96 @@
+data:
+  test_dir_mit: '/mnt/smb_share/SML/Aging_classifier/dataset_used_0730/MultiScensClass' # '/mnt/d/Data/SML/Aging_classifier' # /Data_0715_2D/used for classification'
+  key_name: 'U2OS'
+
+  class_list: ['Antimycin', 'Doxorubicin', 'Etoposide', 'Oxidative', 'Young']
+  dir_group: False
+  dir_name_list: 'all' 
+
+  file_format: '.tif' 
+  divide_dataset_per_gpu: true
+  organelle: mito 
+  mode: 3D-WF (triple2X)
+  img_size: 1024
+  test_name: ['Antimycin', 'Doxorubicin', 'Etoposide', 'Oxidative stress', 'Young'] 
+
+  img_edge: wavelet   # sobel, wavelet
+  dual_class: False
+
+  CutMix: 
+    switch_on: True
+    pointed: True
+    force: False
+--- 
+train:
+  random_seed: 420 
+  num_epoch: 200 
+  num_workers: 2 
+  batch_size: 4 
+  image_size: 1024 
+
+  optimizer:
+    mode: 'adamw'
+    param:
+      lr: 0.00001 
+    betas:
+        - 0.9
+        - 0.999
+    weight_decay: 0.0001
+    amsgrad: False
+    scheduler:
+      mode: MultiStep
+      decay_step: [50, 100, 150]
+      decay_gamma: 0.5
+      warmup_lr: 0.00001
+      warmup_epoch: 20
+
+  loss:
+    name: ['ce', 'fcl']
+    ce:
+      reduction: none
+      weight: 2.
+    fcl:
+      reduction: none
+      weight: 2
+
+---
+test:
+  num_workers: 0
+  batch_size: 1
+---
+model:
+  name: DiNAT
+  device: 'cuda:2'
+
+  DiNAT: 
+    embed_dim: 384
+    depths: [3, 4, 12, 5]
+    num_heads: [6, 12, 24, 48] 
+    drop_path_rate: 0.2
+    kernel_size: 7
+    drop_rate: 0.2 
+    attn_drop_rate: 0.4 
+    channels: 6
+    dilation: [
+              [1, 8, 1],
+              [1, 4, 1, 4],
+              [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2],
+              [1, 1, 1, 1, 1],
+            ]
+    num_classes: 5
+
+---
+log:
+  print_yaml: False
+  name: 'Aging_Classifier_MultiSeneClass_Test' 
+  summary_interval: 1
+  val_interval: 10
+  chkpt_interval: 10
+  log_dir: 'Aging_Classifier_MultiSeneClass_Test'
+  show_last: True
+  generate: True
+  save: False
+---
+load:
+  network_chkpt_path: Checkpoints/AC_MultiSeneClass.pth
+  strict_load: True
