@@ -3,3 +3,4 @@ config_BK/
 Checkpoints/
 **/__pycache__/
 trainer_AC_MultiClass.py
+tmp.zip
