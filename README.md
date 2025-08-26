@@ -36,9 +36,9 @@ This repository is developed based on the paper *Artificial Intelligence for Mit
  - pathlib2=2.3.7
  ```
 
-***Note: To quickly set up the runtime environment, you can use the provided `AIMS_environment.yaml` file for one-click installation.***
+***Note: To quickly set up the runtime environment, you can use the provided `AIMS_environment.yaml` file for one-click installation following the Setup Guide below***
 
-- Quick Environment Setup Guide
+### Quick Environment Setup Guide
 
 1. Make sure you have [Anaconda](https://www.anaconda.com/products/distribution) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed.
 2. In the project root directory, run the following commands to create and activate a new environment:
@@ -46,7 +46,7 @@ This repository is developed based on the paper *Artificial Intelligence for Mit
    conda env create -f AIMS_environment.yaml
    conda activate AIMs
    ```
-3. After installation, you can proceed with model inference and testing as described below.
+3. After installation, you can proceed with model inference for differnet tasks as described below.
 
 ## Structure
 
@@ -62,12 +62,12 @@ AC_OpenSourcedCode_V1/
 ├── AIMS_enviroment.yaml     # Python dependencies for rapid environment deployment
 └── README.md                # Project documentation
 ```
-
+# Usage
 ## Model inference for quick validation
 
-1. Enviroment installation 
-2. Download or prepare a trained model checkpoint (**【Google driven】**) and place it in `Checkpoints/`.
-3. Prepare the dataset (**【Google driven】**) and place it in `datatest/`.
+1. Environment installation and activation
+2. Download or prepare the trained model checkpoints (**【Google driven】**) and place in `Checkpoints/`.
+3. Download the dataset (**【Google driven】**) and place it in `datatest/`.
 4. Run the following command for quick model inference
 
 ### Example 1: Binary classification between Ctrl and etoposide-induced (Eto) senescence using U2OS cell
