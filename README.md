@@ -68,7 +68,7 @@ AC_OpenSourcedCode_V1/
 1. Environment installation and activation
 2. Download or prepare the trained model checkpoints (**【Google driven】**) and place in `Checkpoints/`.
 3. Download the dataset (**【Google driven】**) and place it in `datatest/`.
-4. Run the following command for quick model inference
+4. Run the following commands for quick model inference
 
    #### $\blacksquare$ Example 1: Binary classification between Ctrl and etoposide-induced (Eto) senescence using U2OS cell
       ```bash
