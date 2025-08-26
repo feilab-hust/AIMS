@@ -102,7 +102,7 @@ AC_OpenSourcedCode_V1/
 
 
 # Citation
-If you find this repository useful for your research, please consider citing our paper:
+If you use the repository or relevant data, please cite the corresponding paper:
 ```
 Mao, S., Sun, M., Liu, Y., Li, D., Fei, P., Artificial Intelligence for Mitochondria-based Senescence detection (AIMS) across diverse cellular contexts. 
 ```
