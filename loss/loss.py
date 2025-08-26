@@ -7,12 +7,6 @@ class loss_used(nn.Module):
     def __init__(self, hp):
         super().__init__()
         self.loss_cfg = hp.train.loss
-
-        # self.loss_dict = {'crossentropy': LOSS_REGISTRY.get('CE'),
-        #                   'l1': LOSS_REGISTRY.get('l1'),
-        #                   'l2': LOSS_REGISTRY.get('l2'),
-        #                   }
-
         self.name = self.loss_cfg.name
 
     def forward(self, output: dict, input, GT, GT_grad, Lam = 1):

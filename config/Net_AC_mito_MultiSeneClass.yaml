@@ -92,5 +92,5 @@ log:
   save: False
 ---
 load:
-  network_chkpt_path: Checkpoints/AC_MultiSeneClass.pth
+  network_chkpt_path: checkpoints/AC_MultiSeneClass.pth
   strict_load: True

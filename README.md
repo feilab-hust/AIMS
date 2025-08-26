@@ -1,83 +1,113 @@
-# Deep Learning Project Template for PyTorch
+# Artificial Intelligence for Mitochondria-based Senescence detection (AIMS)
+This repository is developed based on the paper *Artificial Intelligence for Mitochondria-based Senescence detection (AIMS) across diverse cellular contexts*, which provides a Transfoemer-based framework establishing mitochondrial morphology as a universal cellular senescence indicator. 
 
-## Feature
+# Contents
+- [Requirements](#Requirements)
+- [Usage](#Usage)
+- [Citation](#Citation)
+- [Contact](#Contact)
 
-- TensorBoardX / [wandb](https://www.wandb.com/) support
-- Background generator is used ([reason of using background generator](https://github.com/IgorSusmelj/pytorch-styleguide/issues/5))
-  - In Windows, background generator could not be supported. So if error occurs, set false to `use_background_generator` in config
-- Training state and network checkpoint saving, loading
-    - Training state includes not only network weights, but also optimizer, step, epoch.
-    - Checkpoint includes only network weights. This could be used for inference. 
-- Distributed Learning using Distributed Data Parallel is supported
-- Config with yaml file / easy dot-style access to config
-- Code lint / CI
-- Code Testing with pytest
 
-## Code Structure
+# Requirements
+- System requirements
+```
+ - Linux and windows 10/11 should be able to run the code, but the code has been only teseted on Linux (Ubuntu 24.04.1 LTS)
+ - Python 3.10
+ - CUDA 11.8 and cuDNN 8.7
+ - Graphics: NVDIA RTX A6000 or better 
+ - Memory: ≥64 GB
+ - Hard Drive: ~30GB free space for data storage
+```
 
-- `config` dir: folder for config files
-- `dataset` dir: dataloader and dataset codes are here. Also, put dataset in `meta` dir.
-- `model` dir: `model.py` is for wrapping network architecture. `model_arch.py` is for coding network architecture.
-- `test` dir: folder for `pytest` testing codes. You can check your network's flow of tensor by fixing `tests/model/net_arch_test.py`. 
-Just copy & paste `Net_arch.forward` method to  `net_arch_test.py` and add `assert` phrase to check tensor.
-- `utils` dir:
-    - `train_model.py` and `test_model.py` are for train and test model once.
-    - `utils.py` is for utility. random seed setting, dot-access hyper parameter, get commit hash, etc are here. 
-    - `writer.py` is for writing logs in tensorboard / wandb.
-- `trainer.py` file: this is for setting up and iterating epoch.
+- Running environment requirements 
+```
+ - python=3.10.14
+ - torch=2.5.0+cu118
+ - torchvision=0.20.0+cu118
+ - natten=0.17.5
+ - kornia=0.7.3
+ - PyWavelets=1.7.0
+ - timm=1.0.15
+ - einops=0.8.0
+ - scikit-learn=1.5.1
+ - scipy=1.14.0
+ - yaml=6.0.1
+ - numpy=1.26.3
+ - pathlib2=2.3.7
+ ```
 
-## Setup
+***Note: To quickly set up the runtime environment, you can use the provided `AIMS_environment.yaml` file for one-click installation.***
 
-### Install requirements
+- Quick Environment Setup Guide
 
-- python3 (3.6, 3.7, 3.8 is tested)
-- Write PyTorch version which you want to `requirements.txt`. (https://pytorch.org/get-started/)
-- `pip install -r requirements.txt`
+1. Make sure you have [Anaconda](https://www.anaconda.com/products/distribution) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed.
+2. In the project root directory, run the following commands to create and activate a new environment:
+   ```bash
+   conda env create -f AIMS_environment.yaml
+   conda activate AIMs
+   ```
+3. After installation, you can proceed with model inference and testing as described below.
 
-### Config
+## Structure
 
-- Config is written in yaml file(default: `config/default.yaml`)
-- `data` field
-    - Configs for Dataloader.
-    - glob `train_dir` / `test_dir` with `file_format` for Dataloader.
-    - If `divide_dataset_per_gpu` is true, origin dataset is divide into sub dataset for each gpu. 
-    This could mean the size of origin dataset should be multiple of number of using gpu.
-    If this option is false, dataset is not divided but epoch goes up in multiple of number of gpus.
-- `train`/`test` field
-    - Configs for training options.
-    - `random_seed` is for setting python, numpy, pytorch random seed.
-    - `num_epoch` is for end iteration step of training.
-    - `optimizer` is for selecting optimizer. Only `adam optimizer` is supported for now.
-    - `dist` is for configuring Distributed Data Parallel. Not using DDP when `gpus` is 0, using all gpus when `gpus` is -1
-- `model` field
-    - Configs for Network architecture and options for model like device.
-    - You can add configs in yaml format to config your network.
-- `log` field
-    - Configs for logging include tensorboard / wandb logging.
-    - `name` is train name you run. 
-    - `summary_interval` and `checkpoint_interval` are interval of step and epoch between training logging and checkpoint saving.
-    - checkpoint and logs are saved under `chkpt_dir/name` and `log_dir/name`. Tensorboard logs are saving under `log_dir/name/tensorboard`
-- `load` field
-    - loading from wandb server is supported
-    - `wandb_load_path` is `Run path` in overview of run. If you don't want to use wandb load, this field should be `~`.
-    - `network_chkpt_path` is path to network checkpoint file.
-    If using wandb loading, this field should be checkpoint file name of wandb run.
-    - `resume_state_path` is path to training state file.
-    If using wandb loading, this field should be training state file name of wandb run.
+```
+AC_OpenSourcedCode_V1/
+├── Checkpoints/             # Saved model checkpoints for multiple tasks
+├── config/                  # Model definitions using yaml
+├── dataset/                 # dataset used
+├── loss/                    # defined loss funcitons
+├── model/                   # defined model structure
+├── util/                    # utility functions
+├── Test_AC.py               # Main script
+├── AIMS_enviroment.yaml     # Python dependencies for rapid environment deployment
+└── README.md                # Project documentation
+```
 
-### Code lint
+## Model inference for quick validation
 
-1. `pip install -r requirements-dev.txt` for install develop dependencies (this requires python 3.6 and above because of black)
+1. Enviroment installation 
+2. Download or prepare a trained model checkpoint (**【Google driven】**) and place it in `Checkpoints/`.
+3. Prepare the dataset (**【Google driven】**) and place it in `datatest/`.
+4. Run the following command for quick model inference
 
-1. `pre-commit install` for adding pre-commit to git hook
+### Example 1: Binary classification between Ctrl and etoposide-induced (Eto) senescence using U2OS cell
+   ```bash
+   python Test_AC.py --Net_config 'config/Net_AC_mito_Ctrl&Eto_U2OS.yaml'
+   ```
 
-## Train
+### Example 2: Binary classification between Ctrl and doxorubicin-induced (Doxo) senescence using U2OS cell
+   ```bash
+   python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&Doxo_U2OS.yaml'
+   ```
 
-- `python trainer.py -c config/path/to/file -n training_name`
-    - If training name is specified in config, you can omit training name in command line argument.
+### Example 3: Binary classification between Ctrl and antimycin A-induced (Anti) senescence using U2OS cell
+   ```bash
+   python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&Anti_U2OS.yaml'
+   ```
 
-## Inspired by
+### Example 4: Binary classification between Ctrl and hydrogen peroxide-induced (H2O2) senescence using U2OS cell
+   ```bash
+   python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&OS_U2OS.yaml'
+   ```
 
-- https://github.com/open-mmlab/mmsr
-- https://github.com/allenai/allennlp (test case writing)
-- https://github.com/mindslab-ai/voicefilter
+### Example 5: Binary classification between Ctrl and etoposide-induced senescence for cross multiple cell types (BHK21, HeLa, ARPE-19)
+   ```bash
+   python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&Eto_crossCell.yaml'
+   ```
+
+### Example 6: multi-senescent classification between Ctrl and senescent cells induced by four distinct senescence mechanisms (Doxo, Eto, H2O2, Anti)
+   ```bash
+   python Test_AC.py --Net_config 'Net_AC_mito_MultiSeneClass.yaml'
+   ```
+
+
+# Citation
+If you find this repository useful for your research, please consider citing our paper:
+```
+Mao, S., Sun, M., Liu, Y., Li, D., Fei, P., Artificial Intelligence for Mitochondria-based Senescence detection (AIMS) across diverse cellular contexts. 
+```
+
+# Contact
+For questions or suggestions regarding this code, please open an issue in this repository or contact the authors at [minglusun@hust.edu.cn](mailto:minglusun@hust.edu.cn).
+
+

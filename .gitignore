@@ -1,6 +1,6 @@
 Logs/
 config_BK/
-Checkpoints/
+checkpoints/
 **/__pycache__/
 trainer_AC_MultiClass.py
 tmp.zip

@@ -2,8 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from util.register import LOSS_REGISTRY
-from util.ssim import SSIM
-from util.perception import PerceptualLoss
+
 
 @LOSS_REGISTRY.register('ce')
 class CrossEntropyLoss(nn.Module):
@@ -69,33 +68,6 @@ class MSELoss(nn.Module):
         loss = self.w * self.loss(inf, gt)
         return loss
 
-@LOSS_REGISTRY.register('ssim')
-class SSIMLoss(nn.Module):
-    def __init__(self, reduction = 'none', weight = 1.0):
-        super().__init__()
-        self.w = weight
-        self.loss = SSIM()
-
-    def forward(self, inf, gt):
-        assert inf.shape == gt.shape, Exception('shape should be the same: inf: {}, gt: {}'.format(inf.shape, gt.shape))
-        if len(inf.shape) == 4:
-            inf = inf.permute(1,0,2,3)
-            gt = gt.permute(1,0,2,3)
-        loss = self.w * (1 - self.loss(inf, gt))
-        return loss
-
-@LOSS_REGISTRY.register('perception')
-class PerceptionLoss(nn.Module): # TODO: need modification according to the dimension of the output & gt
-    def __init__(self, reduction = 'none', weight = 1.0, device = 'cuda'):
-        super().__init__()
-        self.w = weight
-        self.loss = PerceptualLoss(blocks = [0, 1, 2], weights = [0.3, 0.4, 0.3], device = device)
-
-    def forward(self, inf, gt):
-        assert inf.shape == gt.shape, Exception('shape should be the same: inf: {}, gt: {}'.format(inf.shape, gt.shape))
-        loss = self.w * self.loss(inf, gt)
-        return loss
-
 @LOSS_REGISTRY.register('fft')
 class FFTLoss(nn.Module):
     def __init__(self, reduction = 'none', weight = 1.0):
@@ -137,8 +109,6 @@ class SuperContrastLoss(nn.Module):
         return self.scl_loss(inf, gt)
 
 class SupConLoss(nn.Module):
-    """Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
-    It also supports the unsupervised contrastive loss in SimCLR"""
     def __init__(self, temperature=0.07, contrast_mode='all',
                  base_temperature=0.07):
         super(SupConLoss, self).__init__()
@@ -147,23 +117,7 @@ class SupConLoss(nn.Module):
         self.base_temperature = base_temperature
 
     def forward(self, features, labels=None, mask=None):
-        """Compute loss for model. If both `labels` and `mask` are None,
-        it degenerates to SimCLR unsupervised loss:
-        https://arxiv.org/pdf/2002.05709.pdf
-
-        Args:
-            features: hidden vector of shape [bsz, n_views, ...].
-            labels: ground truth of shape [bsz].
-            mask: contrastive mask of shape [bsz, bsz], mask_{i,j}=1 if sample j
-                has the same class as sample i. Can be asymmetric.
-        Returns:
-            A loss scalar.
-        """
         device = features.device
-        # device = (torch.device('cuda')
-        #           if features.is_cuda
-        #           else torch.device('cpu'))
-
         if len(features.shape) < 3:
             raise ValueError('`features` needs to be [bsz, n_views, ...],'
                              'at least 3 dimensions are required')
@@ -228,10 +182,9 @@ class SupConLoss(nn.Module):
 
 @LOSS_REGISTRY.register('fcl')
 class FocalLoss(nn.Module):
-    def __init__(self, reduction = 'none', weight = 0.2, gamma = 2):
+    def __init__(self, reduction = 'none', gamma = 2):
         super().__init__()
         self.gamma = gamma
-        self.weight = weight
 
     def forward(self, inf, gt, Lam):
         inf_p = F.softmax(inf, dim = 1)

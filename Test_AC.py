@@ -1,12 +1,9 @@
 import argparse
 import yaml
-import itertools
 import traceback
 import random
 import os
 import torch
-import torch.nn as nn
-import torchvision
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
@@ -28,7 +25,9 @@ def distributed_run(fn,  hp_net, world_size, vis = None):
     mp.spawn(fn, args=(hp_net, world_size, vis), nprocs=world_size, join=True)
 
 
-def train_loop(rank, hp_net, world_size=0):
+def main_loop(rank, hp_net, world_size=0):
+    warnings.filterwarnings("ignore")
+
     if hp_net.model.device == "cuda" and world_size != 0:
         hp_net.model.device = rank
         setup(hp_net, rank, world_size)
@@ -86,8 +85,8 @@ def train_loop(rank, hp_net, world_size=0):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        # "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_MultiSeneClass.yaml',
-        "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_Ctrl&Eto_U2OS.yaml',
+        "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_MultiSeneClass.yaml',
+        # "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_Ctrl&Eto_U2OS.yaml',
         # "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_Ctrl&Anti_U2OS.yaml',
         # "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_Ctrl&Doxo_U2OS.yaml',
         # "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_Ctrl&OS_U2OS.yaml',
@@ -105,11 +104,7 @@ def main():
         hp_net.train.random_seed = random.randint(1, 10000)
     set_random_seed(hp_net.train.random_seed)
 
-    # # set GPUs used
-    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    # os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(map(str, hp_net.train.dist.gpus))
-
-    train_loop(0, hp_net)
+    main_loop(0, hp_net)
 
 if __name__ == "__main__":
 
@@ -121,5 +116,6 @@ if __name__ == "__main__":
     from util.model_apply_dual import model_generate as model_generate_dual
     from util.logger import make_logger
     from loss.loss import loss_used
+    import warnings
 
     main()

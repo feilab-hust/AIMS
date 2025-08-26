@@ -87,5 +87,5 @@ log:
   save: False
 ---
 load:
-  network_chkpt_path: Checkpoints/AC_Ctrl&Eto.pth
+  network_chkpt_path: checkpoints/AC_Ctrl&Eto.pth
   strict_load: True
