@@ -22,8 +22,8 @@ This repository is developed based on the paper *Artificial Intelligence for Mit
 - Running environment requirements 
 ```
  - python=3.10.14
- - torch=2.5.0+cu118
- - torchvision=0.20.0+cu118
+ - torch>=2.3.0+cu118
+ - torchvision>=0.18.0+cu118
  - natten=0.17.5
  - kornia=0.7.3
  - PyWavelets=1.7.0
@@ -68,7 +68,7 @@ AC_OpenSourcedCode_V1/
 1. Environment installation and activation
 2. Download or prepare the trained model checkpoints (**【Google driven】**) and place in `Checkpoints/`.
 3. Download the dataset (**【Google driven】**) and place it in `datatest/`.
-4. Run the following commands for quick model inference
+4. Run the following commands for quick model inference, the corresponding prediction results will be output on the terminal.
 
    #### $\blacksquare$ Example 1: Binary classification between Ctrl and etoposide-induced (Eto) senescence using U2OS cell
       ```bash
