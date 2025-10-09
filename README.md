@@ -87,17 +87,17 @@ AC_OpenSourcedCode_V1/
 
    #### $\blacksquare$ Example 4: Binary classification between Ctrl and hydrogen peroxide-induced (H2O2) senescence using U2OS cell
       ```bash
-      python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&OS_U2OS.yaml'
+      python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&H2O2_U2OS.yaml'
       ```
 
-   #### $\blacksquare$ Example 5: Binary classification between Ctrl and etoposide-induced senescence for cross multiple cell types (BHK21, HeLa, ARPE-19)
+   #### $\blacksquare$ Example 5: Binary classification between Ctrl and etoposide-induced (Eto) senescence for cross multiple cell types (BHK-21, HeLa, ARPE-19)
       ```bash
       python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&Eto_crossCell.yaml'
       ```
 
    #### $\blacksquare$ Example 6: multi-senescent classification between Ctrl and senescent cells induced by four distinct senescence mechanisms (Doxo, Eto, H2O2, Anti)
       ```bash
-      python Test_AC.py --Net_config 'Net_AC_mito_MultiSeneClass.yaml'
+      python Test_AC.py --Net_config 'Net_AC_mito_MultiSenClass.yaml'
       ```
 
 
