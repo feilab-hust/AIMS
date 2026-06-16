@@ -1,5 +1,5 @@
 data:
-  test_dir_mit: '/mnt/smb_share/SML/Aging_classifier/dataset_used_0730/MultiScensClass' # '/mnt/d/Data/SML/Aging_classifier' # /Data_0715_2D/used for classification'
+  test_dir_mit: '/mnt/smb_share/SML/Aging_classifier/dataset_used_0730/Github_FINAL(1)/Github_FINAL/MultiSen'
   key_name: 'U2OS'
 
   class_list: ['Antimycin', 'Doxorubicin', 'Etoposide', 'Oxidative', 'Young']

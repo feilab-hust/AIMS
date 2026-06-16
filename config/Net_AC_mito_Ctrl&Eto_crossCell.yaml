@@ -1,5 +1,5 @@
 data:
-  test_dir_mit: '/mnt/smb_share/SML/Aging_classifier/dataset_used_0730/Ctrl&Eto_crossCell'
+  test_dir_mit: '/mnt/smb_share/SML/Aging_classifier/dataset_used_0730/Github_FINAL(1)/Github_FINAL/CrossCell'
   key_name: 'U2OS'
 
   class_list: ['Etoposide', 'Young']
@@ -11,7 +11,7 @@ data:
   organelle: mito 
   mode: 3D-WF (triple2X)
   img_size: 1024
-  test_name: ['Young - HeLa - New', 'Etoposide - HeLa - New', 'Young - BHK21', 'Etoposide - BHK21', 'Young - ARPE-19', 'Etoposide - ARPE-19']
+  test_name: ['Young - HeLa', 'Etoposide - HeLa', 'Young - BHK21', 'Etoposide - BHK21', 'Young - ARPE-19', 'Etoposide - ARPE-19']
 
   img_edge: wavelet   
   dual_class: True

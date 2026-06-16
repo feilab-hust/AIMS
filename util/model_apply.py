@@ -244,27 +244,26 @@ def model_generate(hp, model, logger):
                 
 
     predict_probability_list_sorted = extract_sort(predict_probability_list)
-    
-    if hp.data.dir_group:
-        p_save_ = Path(*dir_name.parts[:-3]) / 'pred_probability.csv'
-    else:
-        p_save_ = Path(*dir_name.parts[:-2]) / 'pred_probability.csv'
+    if hp.log.save:
+        import csv
+        
+        if hp.data.dir_group:
+            p_save_ = Path(*dir_name.parts[:-3]) / 'pred_probability.csv'
+        else:
+            p_save_ = Path(*dir_name.parts[:-2]) / 'pred_probability.csv'
 
-    print(p_save_)       
-         
-    import csv
-    with open(p_save_, 'w', newline = '') as csv_file:
-        writer = csv.writer(csv_file)   
+        with open(p_save_, 'w', newline = '') as csv_file:
+            writer = csv.writer(csv_file)   
 
-        for i, v in enumerate(predict_probability_list_sorted):
-            assert isinstance(v, list), Exception('v should be list here')
+            for i, v in enumerate(predict_probability_list_sorted):
+                assert isinstance(v, list), Exception('v should be list here')
 
-            path_ = Path(v[0])
-            path_save = str(Path(*path_.parts[-3:]))
-            row_ = [path_save] + list(v[1])
-            writer.writerow(row_)
+                path_ = Path(v[0])
+                path_save = str(Path(*path_.parts[-3:]))
+                row_ = [path_save] + list(v[1])
+                writer.writerow(row_)
 
-        csv_file.close()
+            csv_file.close()
     
     if logger is not None:
         logger.info('Test complete')     
