@@ -85,8 +85,8 @@ def main_loop(rank, hp_net, world_size=0):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_MultiSenClass.yaml',
-        # "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_Ctrl&Eto_crossCell.yaml',
+        # "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_MultiSenClass.yaml',
+        "-Net_c", "--Net_config", type=str, default = r'config/Net_AC_mito_Ctrl&Eto_crossCell.yaml',
         help="Net yaml file for config."
     )
     args = parser.parse_args()
