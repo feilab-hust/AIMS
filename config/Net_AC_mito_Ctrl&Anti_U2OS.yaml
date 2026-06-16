@@ -9,7 +9,7 @@ data:
   file_format: '.tif' 
   divide_dataset_per_gpu: true
   organelle: mito 
-  mode: 3D-WF (triple2X)
+  mode: triple2X
   img_size: 1024
   test_name: ['Young - U2OS', 'Antimycin - U2OS']
 

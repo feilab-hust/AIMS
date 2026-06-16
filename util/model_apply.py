@@ -13,49 +13,49 @@ import albumentations as A
 from albumentations.pytorch.transforms import ToTensorV2
 
 label2class = {
-    0: 'Young', 
-    1: 'Doxorubicin', 
-    2: 'Etoposide', 
-    3: 'Antimycin', 
-    4: 'Oxidative stress'
+    0: 'Ctrl', 
+    1: 'Doxo', 
+    2: 'Eto', 
+    3: 'Anti', 
+    4: 'H2O2'
     }
 
 class2label = {v: k for k, v in label2class.items()}
 
 
-def get_path_list_Old_Young(path, key_name, mode, orga, is_mask = False, dual_class = False):
+def get_path_list_Old_Young(path, key_name):
     list_old = []
     list_young = []
     if path:
         for p in Path(path).iterdir():
             if p.is_file() or key_name not in p.name:
                 continue
-            # label = str(p).split('(')[-1].split('d')[0]
+
             name = str(p.name).split('-')[0]
-            if name.strip().lower() != 'young':  # and 'manually selected' in p.name:
+            if name.strip().lower() != 'ctrl': 
                 label = class2label[name.strip()]
-            elif name.strip().lower() == 'young':
+            elif name.strip().lower() == 'ctrl':
                 label = '0'
             else:
                 continue
             
             if label != '0':
-                path_load(p / mode, list_old, orga, label)
+                path_load(p, list_old, label)
             else:
-                path_load(p / mode, list_young, orga, label)
+                path_load(p, list_young, label)
 
 
         return list_old, list_young
     else:
         return None, None
 
-def path_load(path, p_list, orga, label):
+def path_load(path, p_list, label):
     try:
         for p_ in path.iterdir():
-            if p_.suffix == '.tif' and orga in p_.parent.name: #  and '20250111 (N_55)' in str(p_): #
+            if p_.suffix == '.tif': 
                 p_list.append([p_, label])
             elif p_.is_dir() and p_.name != 'compare' and p_.name != 'generated_mask':
-                path_load(p_, p_list, orga, label)
+                path_load(p_, p_list, label)
             else:
                 pass
     except:
@@ -82,15 +82,15 @@ def sorted_by_dir_name(list_dict, dir_groups = False, dir_name = 'all'):
     if dir_groups:
         dir_name_dict_list = {}
         for dict_ in list_dict:
-            if (list(dict_.keys())[0].parts[-3] in dir_name) or dir_name == 'all': 
-                p_save = Path(*list(dict_.keys())[0].parts[:-2])
+            if (list(dict_.keys())[0].parts[-2] in dir_name) or dir_name == 'all': 
+                p_save = Path(*list(dict_.keys())[0].parts[:-1])
                 if p_save in dir_name_dict_list.keys():
                     dir_name_dict_list[p_save].append(dict_)
                 else:
                     dir_name_dict_list.update({p_save: [dict_]})
 
     else:
-        p_save = Path(*list(list_dict[0].keys())[0].parts[:-3])
+        p_save = Path(*list(list_dict[0].keys())[0].parts[:-1])
         dir_name_dict_list = {p_save: list_dict}
 
     return dir_name_dict_list
@@ -105,9 +105,7 @@ def model_generate(hp, model, logger):
         AC_list_test_mit = []
 
         inp_size = hp.data.img_size
-        AC_list_old_test_mit, AC_list_young_test_mit = get_path_list_Old_Young(hp.data.test_dir_mit, key_name=test_name,
-                                                                       mode = hp.data.mode, orga = 'mito', is_mask = True if hp.data.organelle == 'mask' else False, 
-                                                                       dual_class = hp.data.dual_class)
+        AC_list_old_test_mit, AC_list_young_test_mit = get_path_list_Old_Young(hp.data.test_dir_mit, key_name=test_name)
         AC_list_old_test_mit = sort_by_idx(AC_list_old_test_mit)
         AC_list_young_test_mit = sort_by_idx(AC_list_young_test_mit)
 
@@ -115,7 +113,7 @@ def model_generate(hp, model, logger):
         get_data_dict(AC_list_young_test_mit, AC_list_old_test_mit, AC_list_test_mit)
 
 
-        print(f'Testing {hp.data.organelle.upper()} in {test_name} on {hp.data.mode}')
+        print(f'Testing {hp.data.organelle.upper()} in {test_name}')
 
         if hp.data.organelle == 'mito':
             AC_list_test_all = AC_list_test_mit
@@ -152,8 +150,10 @@ def model_generate(hp, model, logger):
                     if acc_evaluate is not None:
                         total_acc += acc_evaluate / len(AC_list_test)
 
-                    predict_probability = (1 - torch.nn.functional.softmax(output['output'], dim = 1)[:, 0]).cpu().numpy()
-                    predict_class = torch.argmax(torch.nn.functional.softmax(output['output'], dim = 1))
+                    output_prob = torch.nn.functional.softmax(output['output'], dim = 1)
+                    predict_class = torch.argmax(output_prob)
+                    predict_probability = output_prob[:, predict_class.item()].cpu().numpy()
+                    
 
                     for i, v in enumerate(model.GT):
 
@@ -189,17 +189,20 @@ def model_generate(hp, model, logger):
                             predict_accuracy_dict[str(float(v.item()))][1] += 1
                         else:
                             predict_accuracy_dict.update({str(float(v.item())): [acc_evaluate, 1]})
-
-
+                        
+                    if logger is not None:
+                        logger.info(f' Predict Class: {label2class[predict_class.item()]}, Ground Truth: {label2class[v.item()]}')
+                    else:
+                        pass
+                    
                 if hp.log.save:
                     for k, v in predict_probability_dict.items():
                         print(f'Writing predict result for {test_name + " " + str(dir_name).split("/")[-1]}')
                         import csv
                         if hp.data.dir_group:
-                            p_save_ = Path(*dir_name.parts[:-3]) / '{}_{}_{}_Accuracy_{}_{:.4f}.csv'.format(dir_name.parts[-3], dir_name.parts[-1], hp.data.mode, hp.data.organelle, predict_accuracy_dict[k][0] / predict_accuracy_dict[k][1])
+                            p_save_ = Path(*dir_name.parts[:-3]) / '{}_{}_Accuracy_{}_{:.4f}.csv'.format(dir_name.parts[-3], dir_name.parts[-1], hp.data.organelle, predict_accuracy_dict[k][0] / predict_accuracy_dict[k][1])
                         else:
-                            p_save_ = Path(*dir_name.parts[:-2]) / '{}_{}_Accuracy_{}_{:.4f}.csv'.format(dir_name.parts[-2],  hp.data.mode, hp.data.organelle, predict_accuracy_dict[k][0] / predict_accuracy_dict[k][1])
-                        # p_save_ = dir_name / '_{}_Accuracy_{}_{:.4f}.csv'.format(hp.data.mode, hp.data.organelle, predict_accuracy_dict[k][0] / predict_accuracy_dict[k][1])
+                            p_save_ = Path(*dir_name.parts[:-2]) / '{}_Accuracy_{}_{:.4f}.csv'.format(dir_name.parts[-2], hp.data.organelle, predict_accuracy_dict[k][0] / predict_accuracy_dict[k][1])
                         print(p_save_)
                         with open(p_save_, 'w', newline = '') as csv_file:
                             writer = csv.writer(csv_file)
@@ -223,10 +226,9 @@ def model_generate(hp, model, logger):
                         print(f'Writing predict result for {test_name + " " + str(dir_name).split("/")[-1]}')
                         import csv
                         if hp.data.dir_group:
-                            p_save_ = Path(*dir_name.parts[:-3]) / '{}_{}_{}_{}_pred_probability.csv'.format(dir_name.parts[-3], dir_name.parts[-1], hp.data.mode, hp.data.organelle)
+                            p_save_ = Path(*dir_name.parts[:-3]) / '{}_{}_{}_pred_probability.csv'.format(dir_name.parts[-3], dir_name.parts[-1], hp.data.organelle)
                         else:
-                            p_save_ = Path(*dir_name.parts[:-2]) / '{}_{}_{}_pred_probability.csv'.format(dir_name.parts[-2],  hp.data.mode, hp.data.organelle)
-                        # p_save_ = dir_name / '_{}_Accuracy_{}_{:.4f}.csv'.format(hp.data.mode, hp.data.organelle, predict_accuracy_dict[k][0] / predict_accuracy_dict[k][1])
+                            p_save_ = Path(*dir_name.parts[:-2]) / '{}_{}_pred_probability.csv'.format(dir_name.parts[-2], hp.data.organelle)
                         print(p_save_)
                         with open(p_save_, 'w', newline = '') as csv_file:
                             writer = csv.writer(csv_file)
@@ -237,11 +239,7 @@ def model_generate(hp, model, logger):
                                 row_ = [path_save] + list(v_[1])
                                 writer.writerow(row_)
 
-                            csv_file.close()
-
-                if logger is not None:
-                    logger.info(f' Accuracy for {test_name}: {total_acc}')            
-                
+                            csv_file.close()    
 
     predict_probability_list_sorted = extract_sort(predict_probability_list)
     if hp.log.save:
