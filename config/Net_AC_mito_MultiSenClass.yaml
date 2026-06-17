@@ -1,5 +1,5 @@
 data:
-  test_dir_mit: 'Test_Data/MultiSen'
+  test_dir_mit: 'test_dataset/MultiSen'
   key_name: 'U2OS'
 
   class_list: ['Anti', 'Doxo', 'Eto', 'H2O2', 'Ctrl']

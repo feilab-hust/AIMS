@@ -70,12 +70,12 @@ AC_OpenSourcedCode_V1/
 
    #### $\blacksquare$ Example 1: Binary classification between Ctrl and etoposide-induced (Eto) senescence for cross multiple cell types (BHK-21, HeLa, ARPE-19)
       ```bash
-      python Test_AC.py --Net_config 'Net_AC_mito_Ctrl&Eto_crossCell.yaml'
+      python Test_AC.py --Net_config 'config/Net_AC_mito_Ctrl&Eto_crossCell.yaml'
       ```
 
    #### $\blacksquare$ Example 2: multi-senescent classification between Ctrl and senescent cells induced by four distinct senescence mechanisms (Doxo, Eto, H2O2, Anti)
       ```bash
-      python Test_AC.py --Net_config 'Net_AC_mito_MultiSenClass.yaml'
+      python Test_AC.py --Net_config 'config/Net_AC_mito_MultiSenClass.yaml'
       ```
 
 

@@ -1,5 +1,5 @@
 data:
-  test_dir_mit: 'Test_Data/CrossCell'
+  test_dir_mit: 'test_dataset/CrossCell'
   key_name: 'U2OS'
 
   class_list: ['Eto', 'Ctrl']
