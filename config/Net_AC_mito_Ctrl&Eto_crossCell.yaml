@@ -11,7 +11,7 @@ data:
   organelle: mito 
   mode: 3D-WF (triple2X)
   img_size: 1024
-  test_name: ['Ctrl - HeLa', 'Eto - HeLa', 'Ctrl - BHK21', 'Eto - BHK21', 'Ctrl - ARPE-19', 'Eto - ARPE-19']
+  test_name: ['Ctrl - HeLa', 'Eto - HeLa', 'Ctrl - BHK-21', 'Eto - BHK-21', 'Ctrl - ARPE-19', 'Eto - ARPE-19']
 
   img_edge: wavelet   
   dual_class: True
