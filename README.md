@@ -65,7 +65,7 @@ AC_OpenSourcedCode_V1/
 ## Model inference for quick validation
 
 1. Environment installation and activation
-2. Download or prepare the trained model checkpoints (**【Google driven】**) and place in `Checkpoints/`.
+2. Download the trained model checkpoints (**https://zenodo.org/records/20727737**) and place in `Checkpoints/`.
 3. Run the following commands for quick model inference, the corresponding prediction results will be output on the terminal.
 
    #### $\blacksquare$ Example 1: Binary classification between Ctrl and etoposide-induced (Eto) senescence for cross multiple cell types (BHK-21, HeLa, ARPE-19)
